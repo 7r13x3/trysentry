@@ -1,37 +1,6 @@
 # TrySentry 🔵
 
 > Always watching. Always hunting.
-
-Real EDR (Endpoint Detection & Response) for Windows. Kernel-level telemetry via Sysmon, Sigma-style detection engine, YARA memory scanning, behavioral correlation, automated response, forensics, and a live web dashboard.
-┌─────────────────────────────────────────────────────────────┐
-│ TELEMETRY │
-│ • Sysmon events (kernel-level: process, file, registry) │
-│ • Windows Event Log (EvtSubscribe — push, not poll) │
-│ • ETW consumers │
-│ • WMI persistence monitoring │
-├─────────────────────────────────────────────────────────────┤
-│ DETECTION │
-│ • Sigma rule engine (real spec) │
-│ • YARA in-memory scanning │
-│ • Behavioral correlation over time │
-│ • IOC matching (hash, IP, domain, path) │
-│ • MITRE ATT&CK mapping │
-├─────────────────────────────────────────────────────────────┤
-│ RESPONSE │
-│ • Kill process tree │
-│ • Quarantine file (AES-256 vault) │
-│ • Firewall block │
-│ • Network isolation │
-│ • Forensic snapshot (handles, modules, memory) │
-├─────────────────────────────────────────────────────────────┤
-│ DASHBOARD │
-│ • FastAPI + WebSocket │
-│ • Live event feed │
-│ • Attack timeline + world map │
-└─────────────────────────────────────────────────────────────┘
-
----
-
 ## ⚠️ Legal Disclaimer
 
 TrySentry is a **defensive security tool**. It only reads system telemetry and applies automated response to detected threats on the local machine. It does not attack anything, exfiltrate data, or modify other systems. Run it only on machines you own or are authorized to monitor.
