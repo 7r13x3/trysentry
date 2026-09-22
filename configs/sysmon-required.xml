@@ -1,0 +1,23 @@
+<!--
+  TrySentry — Minimal Sysmon configuration.
+  For production, use SwiftOnSecurity's config:
+  https://github.com/SwiftOnSecurity/sysmon-config
+
+  Install:
+    sysmon64.exe -accepteula -i sysmon-required.xml
+-->
+<Sysmon schemaversion="4.90">
+  <HashAlgorithms>sha256,imphash</HashAlgorithms>
+  <CheckRevocation>false</CheckRevocation>
+  <EventFiltering>
+    <ProcessCreate onmatch="exclude"/>
+    <NetworkConnect onmatch="exclude"/>
+    <ImageLoad onmatch="exclude"/>
+    <CreateRemoteThread onmatch="exclude"/>
+    <ProcessAccess onmatch="exclude"/>
+    <FileCreate onmatch="exclude"/>
+    <RegistryEvent onmatch="exclude"/>
+    <WmiEvent onmatch="exclude"/>
+    <DnsQuery onmatch="exclude"/>
+  </EventFiltering>
+</Sysmon>
