@@ -1,0 +1,78 @@
+- title: Shadow copies deleted
+  description: Volume shadow copies were deleted — ransomware precursor.
+  level: critical
+  mitre: T1490
+  signals:
+    - ransomware
+    - impact
+  detection:
+    Image|endswith:
+      - vssadmin.exe
+      - wmic.exe
+    CommandLine|contains:
+      - "delete shadows"
+      - "shadowcopy delete"
+    condition: selection
+
+- title: Backup catalog cleared
+  description: Windows Backup catalog was cleared — ransomware behavior.
+  level: critical
+  mitre: T1490
+  signals:
+    - ransomware
+    - impact
+  detection:
+    Image|endswith: wbadmin.exe
+    CommandLine|contains: "delete catalog"
+    condition: selection
+
+- title: BCDEdit recovery disabled
+  description: Windows recovery was disabled via bcdedit.
+  level: critical
+  mitre: T1490
+  signals:
+    - ransomware
+    - impact
+  detection:
+    Image|endswith: bcdedit.exe
+    CommandLine|contains:
+      - "recoveryenabled no"
+      - "bootstatuspolicy ignoreallfailures"
+    condition: selection
+
+- title: Mass file encryption activity
+  description: Multiple files were created with common ransomware extensions.
+  level: critical
+  mitre: T1486
+  signals:
+    - ransomware
+    - impact
+  detection:
+    EventID: 11
+    TargetFilename|endswith:
+      - ".encrypted"
+      - ".locked"
+      - ".crypto"
+      - ".crypt"
+      - ".enc"
+      - ".wncry"
+      - ".locky"
+      - ".zepto"
+    condition: selection
+
+- title: Ransomware note dropped
+  description: A known ransomware note file was created.
+  level: critical
+  mitre: T1486
+  signals:
+    - ransomware
+    - impact
+  detection:
+    EventID: 11
+    TargetFilename|endswith:
+      - "DECRYPT_INSTRUCTIONS.html"
+      - "HOW_TO_DECRYPT.txt"
+      - "READ_ME_FOR_DECRYPT.txt"
+      - "_readme.txt"
+      - "HELP_DECRYPT.html"
+    condition: selection
