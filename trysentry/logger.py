@@ -1,6 +1,6 @@
 """
-TrySentry — Logger
-Blue & white theme.
+TrySentry - Logger
+Blue & white theme (ASCII-safe).
 """
 from rich.console import Console
 from rich.table import Table
@@ -36,55 +36,51 @@ def error(msg: str):
 
 
 def alert(msg: str):
-    console.print(f"[bold white on bright_blue] ALERT [/bold white on bright_blue] "
-                  f"[{WHITE}]{msg}[/{WHITE}]")
+    console.print(
+        f"[bold white on bright_blue] ALERT [/bold white on bright_blue] "
+        f"[{WHITE}]{msg}[/{WHITE}]"
+    )
 
 
 def step(msg: str):
-    console.print(f"[{BLUE}]▸[/{BLUE}] [{WHITE}]{msg}[/{WHITE}]")
+    console.print(f"[{BLUE}]>[/{BLUE}] [{WHITE}]{msg}[/{WHITE}]")
 
 
 def hint(msg: str):
     console.print(f"    [{WHITE_DIM}]{msg}[/{WHITE_DIM}]")
 
 
-def line(char: str = "─", n: int = 64):
+def line(char: str = "-", n: int = 64):
     console.print(f"[{BLUE_DIM}]{char * n}[/{BLUE_DIM}]")
 
 
 def banner():
     logo = r"""
-              ████████╗██████╗ ██╗   ██╗
-              ╚══██╔══╝██╔══██╗╚██╗ ██╔╝
-                 ██║   ██████╔╝ ╚████╔╝
-                 ██║   ██╔══██╗  ╚██╔╝
-                 ██║   ██║  ██║   ██║
-                 ╚═╝   ╚═╝  ╚═╝   ╚═╝
+        TTTTT  RRRR   Y   Y
+          T    R   R   Y Y
+          T    RRRR     Y
+          T    R  R     Y
+          T    R   R    Y
 
-              S E N T R Y
+        S E N T R Y
 
-     Endpoint Detection & Response
-                    v1.0.0
+   Endpoint Detection & Response
+              v1.0.0
 """
     console.print(f"[bold {BLUE}]{logo}[/bold {BLUE}]")
-    line("═", 64)
+    line("=", 64)
 
 
 def menu(title: str, options: list):
-    console.print(f"[bold {BLUE}]╔{'═' * 62}╗[/bold {BLUE}]")
-    console.print(f"[bold {BLUE}]║[/bold {BLUE}]  "
-                  f"[{WHITE}]{title:<60}[/{WHITE}]"
-                  f"[bold {BLUE}]║[/bold {BLUE}]")
-    console.print(f"[bold {BLUE}]╠{'═' * 62}╣[/bold {BLUE}]")
+    console.print(f"[bold {BLUE}]{'=' * 64}[/bold {BLUE}]")
+    console.print(f"[bold {BLUE}]  {title:<60}[/bold {BLUE}]")
+    console.print(f"[bold {BLUE}]{'-' * 64}[/bold {BLUE}]")
     for key, label in options:
         k = f"[{key:>3}]" if key else "     "
         console.print(
-            f"[bold {BLUE}]║[/bold {BLUE}]  "
-            f"[{BLUE}]{k}[/{BLUE}]  "
-            f"[{WHITE}]{label:<53}[/{WHITE}]"
-            f"[bold {BLUE}]║[/bold {BLUE}]"
+            f"[{BLUE}]{k}[/{BLUE}]  [{WHITE}]{label}[/{WHITE}]"
         )
-    console.print(f"[bold {BLUE}]╚{'═' * 62}╝[/bold {BLUE}]")
+    console.print(f"[bold {BLUE}]{'=' * 64}[/bold {BLUE}]")
     console.print()
 
 
@@ -118,3 +114,17 @@ def progress_bar(description: str):
         TimeElapsedColumn(),
         console=console,
     )
+
+
+def success_config(cfg):
+    """Print a formatted config summary."""
+    panel("Configuration OK", (
+        f"Config:           loaded\n"
+        f"Sysmon enabled:   {cfg.telemetry.use_sysmon}\n"
+        f"Process monitor:  {cfg.telemetry.use_processes}\n"
+        f"Network monitor:  {cfg.telemetry.use_network}\n"
+        f"Sigma rules dir:  {cfg.detection.sigma_dir}\n"
+        f"Auto-response:    {cfg.response.auto_response}\n"
+        f"Kill threshold:   {cfg.response.kill_threshold}\n"
+        f"Min severity:     {cfg.alerts.min_severity}\n"
+    ))
