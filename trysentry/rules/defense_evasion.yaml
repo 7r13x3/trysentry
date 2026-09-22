@@ -1,0 +1,79 @@
+- title: CreateRemoteThread injection
+  description: A process created a thread in another process — process injection.
+  level: critical
+  mitre: T1055
+  signals:
+    - remote_thread
+    - process_injection
+  detection:
+    EventID: 8
+    condition: selection
+
+- title: Process hollowing indicator
+  description: A process wrote to another process's memory — hollowing or injection.
+  level: critical
+  mitre: T1055.012
+  signals:
+    - process_injection
+  detection:
+    EventID: 10
+    GrantedAccess|contains: "0x1fffff"
+    condition: selection
+
+- title: Windows Defender disabled via registry
+  description: Windows Defender was disabled through the registry.
+  level: critical
+  mitre: T1562.001
+  signals:
+    - defense_evasion
+    - registry_modification
+  detection:
+    TargetObject|contains:
+      - "\\Windows Defender\\DisableAntiSpyware"
+      - "\\Windows Defender\\Real-Time Protection\\DisableRealtimeMonitoring"
+    condition: selection
+
+- title: Firewall disabled via netsh
+  description: Windows Firewall was disabled via netsh.
+  level: critical
+  mitre: T1562.004
+  signals:
+    - defense_evasion
+  detection:
+    Image|endswith: netsh.exe
+    CommandLine|contains:
+      - "advfirewall set"
+      - "firewall set opmode disable"
+    condition: selection
+
+- title: Event log cleared
+  description: A Windows event log was cleared — anti-forensics.
+  level: critical
+  mitre: T1070.001
+  signals:
+    - defense_evasion
+    - anti_forensics
+  detection:
+    Image|endswith: wevtutil.exe
+    CommandLine|contains: "cl"
+    condition: selection
+
+- title: Suspicious masquerading process name
+  description: A process is masquerading as a system binary from a non-system path.
+  level: high
+  mitre: T1036.005
+  signals:
+    - masquerading_name
+    - suspicious_path
+  detection:
+    Image|endswith:
+      - "\\svchost.exe"
+      - "\\lsass.exe"
+      - "\\csrss.exe"
+      - "\\winlogon.exe"
+    Image|contains:
+      - "\\Temp\\"
+      - "\\AppData\\"
+      - "\\Downloads\\"
+      - "\\Public\\"
+    condition: selection
