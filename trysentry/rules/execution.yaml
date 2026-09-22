@@ -1,0 +1,93 @@
+- title: Office spawning a shell
+  description: A Microsoft Office process spawned a command shell — classic macro attack.
+  level: critical
+  mitre: T1566.001
+  signals:
+    - office_spawns_shell
+    - encoded_command
+  detection:
+    Image|endswith:
+      - cmd.exe
+      - powershell.exe
+      - wscript.exe
+      - cscript.exe
+      - mshta.exe
+    ParentImage|endswith:
+      - WINWORD.EXE
+      - EXCEL.EXE
+      - POWERPNT.EXE
+      - OUTLOOK.EXE
+      - MSACCESS.EXE
+    condition: selection
+
+- title: PowerShell encoded command
+  description: PowerShell launched with an encoded command — commonly used to obfuscate malicious payloads.
+  level: high
+  mitre: T1059.001
+  signals:
+    - encoded_command
+    - obfuscation
+  detection:
+    Image|endswith: powershell.exe
+    CommandLine|contains: "-enc"
+    condition: selection
+
+- title: PowerShell download cradle
+  description: PowerShell downloading remote content — often used for initial payload delivery.
+  level: high
+  mitre: T1059.001
+  signals:
+    - encoded_command
+    - ingress_tool
+  detection:
+    Image|endswith: powershell.exe
+    CommandLine|contains:
+      - "DownloadString"
+      - "DownloadFile"
+      - "Invoke-WebRequest"
+      - "IEX"
+      - "Invoke-Expression"
+      - "Net.WebClient"
+    condition: selection
+
+- title: Suspicious mshta execution
+  description: mshta.exe executing a remote or script payload.
+  level: high
+  mitre: T1218.005
+  signals:
+    - script_host
+    - suspicious_path
+  detection:
+    Image|endswith: mshta.exe
+    CommandLine|contains:
+      - "http://"
+      - "https://"
+      - "javascript:"
+      - "vbscript:"
+    condition: selection
+
+- title: rundll32 with suspicious arguments
+  description: rundll32.exe executing a JavaScript or remote DLL.
+  level: high
+  mitre: T1218.011
+  signals:
+    - script_host
+    - suspicious_path
+  detection:
+    Image|endswith: rundll32.exe
+    CommandLine|contains:
+      - "javascript:"
+      - "http://"
+      - "https://"
+    condition: selection
+
+- title: wmic process creation
+  description: wmic.exe used to create a new process — often used for lateral movement.
+  level: medium
+  mitre: T1047
+  signals:
+    - suspicious_path
+  detection:
+    Image|endswith: wmic.exe
+    CommandLine|contains: "process call create"
+    condition: selection
