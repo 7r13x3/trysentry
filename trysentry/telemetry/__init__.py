@@ -1,0 +1,1 @@
+# TrySentry telemetry sources
