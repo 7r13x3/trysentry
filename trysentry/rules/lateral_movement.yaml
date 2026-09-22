@@ -1,0 +1,64 @@
+- title: PsExec-style service creation
+  description: A service was created with a suspicious name — possible PsExec lateral movement.
+  level: high
+  mitre: T1021.002
+  signals:
+    - lateral_movement
+    - service_install
+  detection:
+    Image|endswith: services.exe
+    CommandLine|contains:
+      - "PSEXESVC"
+      - "psexesvc"
+    condition: selection
+
+- title: Remote SMB connection
+  description: An SMB connection was established to a remote system.
+  level: medium
+  mitre: T1021.002
+  signals:
+    - lateral_movement
+    - network
+  detection:
+    EventID: 3
+    DestinationPort: 445
+    condition: selection
+
+- title: Remote RDP connection
+  description: An outbound RDP connection was established.
+  level: medium
+  mitre: T1021.001
+  signals:
+    - lateral_movement
+    - network
+  detection:
+    EventID: 3
+    DestinationPort: 3389
+    condition: selection
+
+- title: WinRM / PowerShell remoting
+  description: PowerShell was used to execute commands on a remote system.
+  level: high
+  mitre: T1021.006
+  signals:
+    - lateral_movement
+    - encoded_command
+  detection:
+    Image|endswith: powershell.exe
+    CommandLine|contains:
+      - "-ComputerName"
+      - "Invoke-Command"
+      - "Enter-PSSession"
+      - "New-PSSession"
+    condition: selection
+
+- title: net use to remote share
+  description: A remote network share was mounted.
+  level: medium
+  mitre: T1021.002
+  signals:
+    - lateral_movement
+  detection:
+    Image|endswith: net.exe
+    CommandLine|contains: " use "
+    condition: selection
