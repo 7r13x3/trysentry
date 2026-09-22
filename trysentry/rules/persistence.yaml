@@ -1,0 +1,74 @@
+- title: Registry Run key persistence
+  description: A binary registered itself in a Run key for autostart persistence.
+  level: high
+  mitre: T1547.001
+  signals:
+    - registry_run_key
+    - persistence
+  detection:
+    TargetObject|contains:
+      - "\\Software\\Microsoft\\Windows\\CurrentVersion\\Run\\"
+      - "\\Software\\Microsoft\\Windows\\CurrentVersion\\RunOnce\\"
+    condition: selection
+
+- title: Registry Run key via PowerShell
+  description: PowerShell writing to a Run key — common malware persistence.
+  level: high
+  mitre: T1547.001
+  signals:
+    - registry_run_key
+    - encoded_command
+  detection:
+    Image|endswith: powershell.exe
+    TargetObject|contains: "CurrentVersion\\Run"
+    condition: selection
+
+- title: Scheduled task created
+  description: A new scheduled task was created — often used for persistence.
+  level: medium
+  mitre: T1053.005
+  signals:
+    - scheduled_task
+    - persistence
+  detection:
+    Image|endswith: schtasks.exe
+    CommandLine|contains: "/create"
+    condition: selection
+
+- title: Service installed
+  description: A new Windows service was installed — possible persistence.
+  level: high
+  mitre: T1543.003
+  signals:
+    - service_install
+    - persistence
+  detection:
+    Image|endswith:
+      - sc.exe
+      - net.exe
+    CommandLine|contains:
+      - "create"
+      - "start"
+    condition: selection
+
+- title: WMI event subscription created
+  description: A WMI event consumer or filter was created — fileless persistence technique.
+  level: critical
+  mitre: T1546.003
+  signals:
+    - wmi_persistence
+    - persistence
+  detection:
+    EventID: 19
+    condition: selection
+
+- title: WMI consumer created
+  description: A WMI event consumer was registered — indicates WMI persistence.
+  level: critical
+  mitre: T1546.003
+  signals:
+    - wmi_persistence
+    - persistence
+  detection:
+    EventID: 20
+    condition: selection
