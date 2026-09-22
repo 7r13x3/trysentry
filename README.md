@@ -1,59 +1,81 @@
-# TrySentry 🔵
+# TrySentry
 
-> Always watching. Always hunting.
-## ⚠️ Legal Disclaimer
+> Real EDR for Windows. Kernel-level telemetry, Sigma rules, YARA scanning, auto-response.
 
-TrySentry is a **defensive security tool**. It only reads system telemetry and applies automated response to detected threats on the local machine. It does not attack anything, exfiltrate data, or modify other systems. Run it only on machines you own or are authorized to monitor.
+TrySentry watches your Windows machine in real time — processes, files, registry, network — detects threats using Sigma-style rules, and responds automatically.
 
 ---
 
-## Prerequisites
+## What It Does
 
-- **Windows 10 / 11**
-- **Python 3.10+**
-- **Administrator privileges** (required for full telemetry and response)
-- **Sysmon** (free, from Microsoft Sysinternals) — provides kernel-level telemetry
+| Layer | Capability |
+|---|---|
+| **Telemetry** | Sysmon events, Windows Event Log, processes, network, registry |
+| **Detection** | Sigma rules, YARA memory scan, behavioral chains, MITRE ATT&CK |
+| **Response** | Kill tree, quarantine file, firewall block, forensic snapshot |
+| **Dashboard** | FastAPI + WebSocket live feed |
+| **Report** | Self-contained HTML incident report |
 
-### Install Sysmon (required for full features)
+---
 
-```powershell
-# Download
-Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile "Sysmon.zip"
-Expand-Archive Sysmon.zip -DestinationPath Sysmon
+## Requirements
 
-# Install with SwiftOnSecurity config (the industry-standard config)
-cd Sysmon
-Invoke-WebRequest -Uri "https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml" -OutFile "sysmonconfig.xml"
-.\sysmon64.exe -accepteula -i sysmonconfig.xml
-Features
-Layer	Feature
-Telemetry	Sysmon, Windows Event Log, ETW, WMI, processes, network, registry
-Detection	Sigma rules, YARA scanning, behavioral chains, IOC matching, risk scoring
-Response	Kill tree, quarantine, firewall block, network isolation, forensic snapshot
-Forensics	Memory dump, handle enumeration, module list, attack timeline
-Dashboard	FastAPI + WebSocket + live map + timeline
-Report	Self-contained HTML incident report
-Installation
+- Windows 10 / 11
+- Python 3.10+
+- Administrator privileges
+- **Sysmon** (free, from Microsoft) — for kernel-level telemetry
+
+---
+
+## Install
+
+```bash
 git clone https://github.com/7r13x3/trysentry.git
 cd trysentry
 pip install -r requirements.txt
+Install Sysmon (recommended)
+Run as Administrator:
+Invoke-WebRequest -Uri "https://download.sysinternals.com/files/Sysmon.zip" -OutFile "Sysmon.zip"
+Expand-Archive Sysmon.zip -DestinationPath Sysmon
+cd Sysmon
+Invoke-WebRequest -Uri "https://raw.githubusercontent.com/SwiftOnSecurity/sysmon-config/master/sysmonconfig-export.xml" -OutFile "sysmonconfig.xml"
+.\sysmon64.exe -accepteula -i sysmonconfig.xml
+Without Sysmon, TrySentry falls back to user-mode telemetry only.
 Usage
+Interactive Menu
 python -m trysentry
-CLI Commands
+  [ 1 ]   Start Monitoring
+  [ 2 ]   Stop Monitoring
+  [ 3 ]   View Alerts
+  [ 4 ]   View Timeline
+  [ 5 ]   Forensics Snapshot
+  [ 6 ]   Load Rules
+  [ 7 ]   Scan Memory (YARA)
+  [ 8 ]   Launch Dashboard
+  [ 9 ]   Generate Report
+  [ 10 ]  Settings
+  [ 0 ]   Exit
+CLI
+python -m trysentry.cli start
+python -m trysentry.cli scan-memory --pid 1234
+python -m trysentry.cli report --output incident.html
+Sample Alert
+[ALERT]  CRITICAL                       2026-09-22 14:32:11
+  Rule:      Office spawning PowerShell
+  MITRE:     T1566.001 — Spearphishing Attachment
+  Process:   powershell.exe  (PID 8234)
+  Parent:    WINWORD.EXE     (PID 5120)
+  Command:   powershell -enc SQBFAFgAKA...
+  
+  Actions:
+    ✓ Killed process tree
+    ✓ Quarantined invoice.docm
+    ✓ Blocked remote IP
+    ✓ Captured forensic snapshot
+Legal
+Defensive security tool. Reads local telemetry only. Run on systems you own or are authorized to monitor.
 License
 MIT
-
-**Commit changes.**
-
----
-
-## 📝 File 3: `LICENSE`
-
-**Add file → Create new file** → name: `LICENSE`
-
-```text
-MIT License
-
 Copyright (c) 2026 7r13x3
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
