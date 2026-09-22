@@ -1,0 +1,62 @@
+# ═══════════════════════════════════════════════════════════
+#  TrySentry v1.0 — Configuration
+# ═══════════════════════════════════════════════════════════
+
+[engine]
+interval_ms        = 1000
+correlation_window = 10
+max_alerts_buffer  = 10000
+
+[telemetry]
+use_sysmon     = true
+use_eventlog   = true
+use_etw        = false
+use_wmi        = true
+use_processes  = true
+use_network    = true
+use_registry   = true
+
+[sysmon]
+channel   = "Microsoft-Windows-Sysmon/Operational"
+event_ids = [1, 3, 7, 8, 10, 11, 12, 13, 19, 20, 22]
+
+[detection]
+sigma_dir         = "trysentry/rules"
+yara_enabled      = true
+behavior_enabled  = true
+ioc_enabled       = true
+
+[response]
+auto_response        = true
+kill_threshold       = "high"
+quarantine_threshold = "high"
+firewall_threshold   = "critical"
+isolation_threshold  = "critical"
+quarantine_dir       = "quarantine"
+
+[alerts]
+output_dir      = "logs"
+log_json        = true
+log_console     = true
+min_severity    = "low"
+discord_webhook = ""
+
+[dashboard]
+enabled = false
+host    = "127.0.0.1"
+port    = 8080
+
+[whitelist]
+processes = [
+    "svchost.exe", "csrss.exe", "wininit.exe", "services.exe",
+    "lsass.exe", "smss.exe", "winlogon.exe", "System",
+    "explorer.exe", "MsMpEng.exe", "conhost.exe", "dwm.exe",
+    "taskhostw.exe", "sihost.exe", "ctfmon.exe"
+]
+
+paths = [
+    "C:\\Windows\\System32\\",
+    "C:\\Windows\\SysWOW64\\",
+    "C:\\Program Files\\",
+    "C:\\Program Files (x86)\\"
+]
